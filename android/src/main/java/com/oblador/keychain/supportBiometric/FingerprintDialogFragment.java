@@ -154,16 +154,16 @@ public class FingerprintDialogFragment extends DialogFragment {
         mFingerprintIcon = layout.findViewById(R.id.fingerprint_icon);
         mErrorText = layout.findViewById(R.id.fingerprint_error);
 
-        final CharSequence negativeButtonText =
-                mBundle.getCharSequence(BiometricPrompt.KEY_NEGATIVE_TEXT);
-        builder.setNegativeButton(negativeButtonText, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (mNegativeButtonListener != null) {
-                    mNegativeButtonListener.onClick(dialog, which);
-                }
-            }
-        });
+        // final CharSequence negativeButtonText =
+        //         mBundle.getCharSequence(BiometricPrompt.KEY_NEGATIVE_TEXT);
+        // builder.setNegativeButton(negativeButtonText, new DialogInterface.OnClickListener() {
+        //     @Override
+        //     public void onClick(DialogInterface dialog, int which) {
+        //         if (mNegativeButtonListener != null) {
+        //             mNegativeButtonListener.onClick(dialog, which);
+        //         }
+        //     }
+        // });
 
         builder.setView(layout);
         mDialog = builder.create();
