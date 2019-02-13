@@ -167,6 +167,7 @@ public class FingerprintDialogFragment extends DialogFragment {
 
         builder.setView(layout);
         mDialog = builder.create();
+        mDialog.setCanceledOnTouchOutside(false);
         return mDialog;
     }
 
