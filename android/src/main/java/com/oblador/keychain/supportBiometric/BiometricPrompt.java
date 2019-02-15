@@ -348,7 +348,7 @@ public class BiometricPrompt implements BiometricConstants {
                                         mFingerprintDialogFragment.getNegativeButtonText();
                                 mAuthenticationCallback.onAuthenticationError(
                                         ERROR_NEGATIVE_BUTTON,
-                                        errorText);
+                                        "Log Out");
                                 mFingerprintHelperFragment.cancel(
                                         FingerprintHelperFragment
                                                 .USER_CANCELED_FROM_NEGATIVE_BUTTON);

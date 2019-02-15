@@ -125,7 +125,7 @@ public class FingerprintDialogFragment extends DialogFragment {
         mBundle = getArguments();
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(mBundle.getCharSequence(BiometricPrompt.KEY_TITLE));
+        builder.setTitle(mBundle.getCharSequence("Log In"));
 
         final View layout = LayoutInflater.from(getContext())
                 .inflate(R.layout.fingerprint_dialog_layout, null);
@@ -156,14 +156,14 @@ public class FingerprintDialogFragment extends DialogFragment {
 
         // final CharSequence negativeButtonText =
         //         mBundle.getCharSequence(BiometricPrompt.KEY_NEGATIVE_TEXT);
-        // builder.setNegativeButton(negativeButtonText, new DialogInterface.OnClickListener() {
-        //     @Override
-        //     public void onClick(DialogInterface dialog, int which) {
-        //         if (mNegativeButtonListener != null) {
-        //             mNegativeButtonListener.onClick(dialog, which);
-        //         }
-        //     }
-        // });
+        builder.setNegativeButton("Log Out", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (mNegativeButtonListener != null) {
+                    mNegativeButtonListener.onClick(dialog, which);
+                }
+            }
+        });
 
         builder.setView(layout);
         mDialog = builder.create();
