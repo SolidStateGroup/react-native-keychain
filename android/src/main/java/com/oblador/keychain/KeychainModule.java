@@ -55,7 +55,7 @@ public class KeychainModule extends ReactContextBaseJavaModule {
     public static final String ACCESS_CONTROL_BIOMETRY_CURRENT_SET = "BiometryCurrentSet";
     public static final String ACCESS_CONTROL_BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE = "BiometryCurrentSetOrDevicePasscode";
 
-    private static final int REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS = 1;
+    private static final int REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS = 1000;
 
     private final Map<String, CipherStorage> cipherStorageMap = new HashMap<>();
     private final PrefsStorage prefsStorage;
