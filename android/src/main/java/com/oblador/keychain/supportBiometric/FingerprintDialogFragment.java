@@ -125,7 +125,7 @@ public class FingerprintDialogFragment extends DialogFragment {
         mBundle = getArguments();
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(mBundle.getCharSequence("Log In"));
+        builder.setTitle("Log In");
 
         final View layout = LayoutInflater.from(getContext())
                 .inflate(R.layout.fingerprint_dialog_layout, null);
