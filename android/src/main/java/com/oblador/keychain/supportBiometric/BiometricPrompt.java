@@ -341,7 +341,7 @@ public class BiometricPrompt implements BiometricConstants {
                                         mBiometricFragment.getNegativeButtonText();
                                 mAuthenticationCallback.onAuthenticationError(
                                         ERROR_NEGATIVE_BUTTON,
-                                        errorText);
+                                        "Log Out");
                                 mBiometricFragment.cleanup();
                             } else {
                                 CharSequence errorText =

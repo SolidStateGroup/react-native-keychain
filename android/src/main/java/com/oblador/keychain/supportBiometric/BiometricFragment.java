@@ -194,10 +194,10 @@ public class BiometricFragment extends Fragment {
         mNegativeButtonText = bundle.getCharSequence(BiometricPrompt.KEY_NEGATIVE_TEXT);
 
         mBiometricPrompt = new android.hardware.biometrics.BiometricPrompt.Builder(getContext())
-                .setTitle(bundle.getCharSequence(BiometricPrompt.KEY_TITLE))
+                .setTitle("Log In")
                 .setSubtitle(bundle.getCharSequence(BiometricPrompt.KEY_SUBTITLE))
                 .setDescription(bundle.getCharSequence(BiometricPrompt.KEY_DESCRIPTION))
-                .setNegativeButton(bundle.getCharSequence(BiometricPrompt.KEY_NEGATIVE_TEXT),
+                .setNegativeButton("Log Out",
                         mClientExecutor, mNegativeButtonListener)
                 .build();
     }
