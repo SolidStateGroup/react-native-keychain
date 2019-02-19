@@ -36,6 +36,8 @@ public interface CipherStorage {
 
     interface DecryptionResultHandler {
         public void onDecrypt(DecryptionResult decryptionResult, String error);
+
+        public void onDecrypt(DecryptionResult decryptionResult, String error, int errorCode);
     }
 
     EncryptionResult encrypt(@NonNull String service, @NonNull String username, @NonNull String password, String accessControl) throws CryptoFailedException;

@@ -184,6 +184,57 @@ public class KeychainModule extends ReactContextBaseJavaModule {
         }
     }
 
+    private void onDecryptionResult(DecryptionResult decryptionResult, String error, int errorCode, final String defaultService, final Promise promise) {
+        if (decryptionResult != null) {
+            WritableMap credentials = Arguments.createMap();
+
+            credentials.putString("service", defaultService);
+            credentials.putString("username", decryptionResult.username);
+            credentials.putString("password", decryptionResult.password);
+
+            promise.resolve(credentials);
+        } else {
+            promise.reject(errorCode != -1 ? Integer.toString(errorCode) : E_CRYPTO_FAILED, error);
+        }
+    }
+
+    private void onDecryptionResultOldCipher(DecryptionResult decryptionResult, String error, int errorCode, final String defaultService, final Promise promise, final CipherStorage oldCipherStorage, final CipherStorage nonBiometryCipherStorage, final ReadableMap options) {
+        if (decryptionResult != null) {
+            WritableMap credentials = Arguments.createMap();
+
+            credentials.putString("service", defaultService);
+            credentials.putString("username", decryptionResult.username);
+            credentials.putString("password", decryptionResult.password);
+
+            try {
+                // clean up the old cipher storage
+                oldCipherStorage.removeKey(defaultService);
+                // encrypt using the current cipher storage
+                EncryptionResult encryptionResult = nonBiometryCipherStorage.encrypt(defaultService, decryptionResult.username, decryptionResult.password, null);
+                // store the encryption result
+                prefsStorage.storeEncryptedEntry(defaultService, encryptionResult);
+            } catch (CryptoFailedException e) {
+                if (e.getCause().getCause() != null && e.getCause().getCause().getMessage() == "User not authenticated") {
+                    mService = defaultService;
+                    mPromise = promise;
+                    mOptions = options;
+                    mCurrentAction = "get";
+                    this.handleUserNotAuthenticatedException(promise);
+                } else {
+                    Log.e(KEYCHAIN_MODULE, e.getMessage());
+                    promise.reject(E_CRYPTO_FAILED, e);
+                }
+            } catch (KeyStoreAccessException e) {
+                Log.e(KEYCHAIN_MODULE, e.getMessage());
+                promise.reject(E_KEYSTORE_ACCESS_ERROR, e);
+            }
+
+            promise.resolve(credentials);
+        } else {
+            promise.reject(errorCode != -1 ? Integer.toString(errorCode) : E_CRYPTO_FAILED, error);
+        }
+    }
+
     @ReactMethod
     public void getGenericPasswordForOptions(final String service, final ReadableMap options, final Promise promise) {
         final String defaultService = getDefaultServiceIfNull(service);
@@ -216,20 +267,15 @@ public class KeychainModule extends ReactContextBaseJavaModule {
             }
 
             if (currentCipherStorage != null) {
+                final KeychainModule self = this;
                 DecryptionResultHandler decryptionHandler = new DecryptionResultHandler() {
                     @Override
                     public void onDecrypt(DecryptionResult decryptionResult, String error) {
-                        if (decryptionResult != null) {
-                            WritableMap credentials = Arguments.createMap();
-
-                            credentials.putString("service", defaultService);
-                            credentials.putString("username", decryptionResult.username);
-                            credentials.putString("password", decryptionResult.password);
-
-                            promise.resolve(credentials);
-                        } else {
-                            promise.reject(E_CRYPTO_FAILED, error);
-                        }
+                        self.onDecryptionResult(decryptionResult, error, -1, defaultService, promise);
+                    }
+                    @Override
+                    public void onDecrypt(DecryptionResult decryptionResult, String error, int errorCode) {
+                        self.onDecryptionResult(decryptionResult, error, errorCode, defaultService, promise);
                     }
                 };
                 // The encrypted data is encrypted using the current CipherStorage, so we just decrypt and return
@@ -241,40 +287,11 @@ public class KeychainModule extends ReactContextBaseJavaModule {
                 DecryptionResultHandler decryptionHandler = new DecryptionResultHandler() {
                     @Override
                     public void onDecrypt(DecryptionResult decryptionResult, String error) {
-                        if (decryptionResult != null) {
-                            WritableMap credentials = Arguments.createMap();
-
-                            credentials.putString("service", defaultService);
-                            credentials.putString("username", decryptionResult.username);
-                            credentials.putString("password", decryptionResult.password);
-
-                            try {
-                                // clean up the old cipher storage
-                                oldCipherStorage.removeKey(defaultService);
-                                // encrypt using the current cipher storage
-                                EncryptionResult encryptionResult = nonBiometryCipherStorage.encrypt(defaultService, decryptionResult.username, decryptionResult.password, null);
-                                // store the encryption result
-                                prefsStorage.storeEncryptedEntry(defaultService, encryptionResult);
-                            } catch (CryptoFailedException e) {
-                                if (e.getCause().getCause() != null && e.getCause().getCause().getMessage() == "User not authenticated") {
-                                    mService = defaultService;
-                                    mPromise = promise;
-                                    mOptions = options;
-                                    mCurrentAction = "get";
-                                    self.handleUserNotAuthenticatedException(promise);
-                                } else {
-                                    Log.e(KEYCHAIN_MODULE, e.getMessage());
-                                    promise.reject(E_CRYPTO_FAILED, e);
-                                }
-                            } catch (KeyStoreAccessException e) {
-                                Log.e(KEYCHAIN_MODULE, e.getMessage());
-                                promise.reject(E_KEYSTORE_ACCESS_ERROR, e);
-                            }
-
-                            promise.resolve(credentials);
-                        } else {
-                            promise.reject(E_CRYPTO_FAILED, error);
-                        }
+                        self.onDecryptionResultOldCipher(decryptionResult, error, -1, defaultService, promise, oldCipherStorage, nonBiometryCipherStorage, options);
+                    }
+                    @Override
+                    public void onDecrypt(DecryptionResult decryptionResult, String error, int errorCode) {
+                        self.onDecryptionResultOldCipher(decryptionResult, error, errorCode, defaultService, promise, oldCipherStorage, nonBiometryCipherStorage, options);
                     }
                 };
                 // decrypt using the older cipher storage
