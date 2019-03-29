@@ -198,7 +198,7 @@ public class BiometricFragment extends Fragment {
                 .setSubtitle(bundle.getCharSequence(BiometricPrompt.KEY_SUBTITLE))
                 .setDescription(bundle.getCharSequence(BiometricPrompt.KEY_DESCRIPTION))
                 .setNegativeButton("Log Out",
-                        mClientExecutor, mNegativeButtonListener)
+                        mExecutor, mNegativeButtonListener)
                 .build();
     }
 
