@@ -94,14 +94,14 @@ public class CipherStorageKeystoreRSAECB extends AuthenticationCallback implemen
         }
     }
 
-    @Override
-    public void onAuthenticationFailed() {
-        if (mDecryptParams != null && mDecryptParams.resultHandler != null) {
-            mDecryptParams.resultHandler.onDecrypt(null, "Authentication failed.");
-            mBiometricPromptCancellationSignal.cancel();
-            mDecryptParams = null;
-        }
-    }
+    // @Override
+    // public void onAuthenticationFailed() {
+    //     if (mDecryptParams != null && mDecryptParams.resultHandler != null) {
+    //         mDecryptParams.resultHandler.onDecrypt(null, "Authentication failed.");
+    //         mBiometricPromptCancellationSignal.cancel();
+    //         mDecryptParams = null;
+    //     }
+    // }
 
     @Override
     public void onAuthenticationSucceeded(@NonNull AuthenticationResult result) {
